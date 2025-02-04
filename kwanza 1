@@ -1,0 +1,65 @@
+# Glacier Network
+
+Glacier Network is a decentralized proximity-based social networking platform powered by blockchain integration. It combines real-time location tracking with a hybrid KYC-lite verification system, multi-token support, and a unique withdrawal mechanism. Built on Polygon for low-cost transactions, Glacier emphasizes privacy, security, and user profitability.
+
+![Glacier Network Architecture](https://via.placeholder.com/800x400?text=Glacier+Network+Architecture) *Replace with actual diagram*
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Technologies](#technologies)
+4. [Storage Architecture](#storage-architecture)
+5. [Smart Contract Details](#smart-contract-details)
+6. [Getting Started](#getting-started)
+7. [Installation](#installation)
+8. [Deployment](#deployment)
+9. [Usage](#usage)
+10. [Contributing](#contributing)
+11. [License](#license)
+
+---
+
+## Overview
+Glacier Network enables secure, location-based social interactions through:
+- **Proximity Networking**: Connect with users in your vicinity via real-time GPS.
+- **KYC-Lite Verification**: Blend off-chain identity checks with on-chain credentials (Polygon ID/World Coin).
+- **Withdrawal System**: Users withdraw $100+ balances instantly; businesses request monthly withdrawals after admin approval.
+- **Gasless UX**: Meta-transactions abstract gas costs for seamless onboarding.
+
+## Features
+- **Dynamic Social Graph**: Discover nearby users/events via geospatial indexing.
+- **Multi-Token Economy**: Support for ERC20 tokens (USDC, MATIC) and native $GLCR rewards.
+- **Anti-Rug Mechanisms**: Time-locked business withdrawals + automated user cashouts.
+- **Profit Sharing**: 85% of ad/txn revenue distributed to active users.
+
+## Technologies
+| Component       | Stack                                                                 |
+|-----------------|-----------------------------------------------------------------------|
+| **Frontend**    | React.js, Mapbox GL JS, Web3Modal                                     |
+| **Backend**     | FastAPI (Python), PostgreSQL (Spatial), Redis (Real-time)            |
+| **Blockchain**  | Solidity (Hardhat), Polygon PoS, OpenZeppelin Contracts               |
+| **Auth**        | Polygon ID, World Coin, JWT                                          |
+| **Infra**       | Docker, AWS ECS, IPFS (Media Storage)                                 |
+| **Storage**     | Hot: Redis (Real-time), Warm: PostgreSQL, Cold: IPFS/Arweave (Archival) |
+
+---
+
+## Storage Architecture
+Glacier implements a three-tiered storage system for optimized performance and cost:
+
+| Tier  | Technology       | Use Case                              | Access Latency | Cost  |
+|-------|------------------|---------------------------------------|----------------|-------|
+| Hot   | Redis            | Real-time location updates, sessions | <10ms          | $$$   |
+| Warm  | PostgreSQL (PostGIS) | User profiles, transaction history   | 50-100ms       | $$    |
+| Cold  | IPFS/Arweave     | Archived media, historical data      | 2-5s           | $     |
+
+### Data Migration Logic (Smart Contract)
+To ensure data integrity during migration, Glacier Network uses Merkle Trees to validate data before archiving it in cold storage. 
+
+```solidity
+// Sample cold storage archiving (contracts/GlacierVault.sol)
+function archiveUserData(address user) external {
+    require(msg.sender == archiver, "Unauthorized");
+    coldStorage[user] = warmStorage[user];
+    delete warmStorage[user];
+}
